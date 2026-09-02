@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: chihuo-go-migrate
+  labels:
+    app.kubernetes.io/name: chihuo-go-migrate
+    app.kubernetes.io/component: migration
+    app.kubernetes.io/part-of: chihuo
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 120
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: chihuo-go-migrate
+        app.kubernetes.io/component: migration
+        app.kubernetes.io/part-of: chihuo
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrate
+          image: chihuo-go-api:local
+          imagePullPolicy: IfNotPresent
+          command: ["/usr/local/bin/chihuo-api", "migrate"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          envFrom:
+            - configMapRef:
+                name: chihuo-go-api-config
+          env:
+            - name: HTTP_ADDR
+              value: "127.0.0.1:4000"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chihuo-go-api-secret
+                  key: JWT_SECRET
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: chihuo-go-api-secret
+                  key: DATABASE_URL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi

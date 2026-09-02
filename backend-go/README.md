@@ -104,10 +104,10 @@ constraints.
 
 ## PostgreSQL Persistence
 
-The idempotent migration is at:
+The idempotent migrations are at:
 
 ```text
-internal/store/migrations/001_initial.sql
+internal/store/migrations/*.sql
 ```
 
 `store.PostgresStore` uses the pgx database/sql driver and implements the same
@@ -117,8 +117,16 @@ PostgreSQL store. Without it, local development and tests use the in-memory
 store.
 
 Demand membership and order creation use transactions and row locks. The
-migration includes an `idempotency_records` primary key on
+migration runner tracks applied files in `schema_migrations`; the
+`idempotency_records` table includes a primary key on
 `(actor_id, idempotency_key)` so replay protection is database-atomic.
+
+Run migrations separately in a release pipeline:
+
+```bash
+DATABASE_URL=postgres://... JWT_SECRET="$(openssl rand -hex 32)" \
+  go run ./cmd/server migrate
+```
 
 ## Test and Build
 

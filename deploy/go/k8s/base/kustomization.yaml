@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - postgres.yaml
+  - migrate-job.yaml
   - api.yaml
   - service.yaml
   - ingress.yaml

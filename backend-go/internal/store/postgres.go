@@ -4,11 +4,14 @@ import (
 	"context"
 	"crypto/rand"
 	"database/sql"
-	_ "embed"
+	"embed"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/fs"
+	"path"
+	"sort"
 	"strings"
 	"time"
 
@@ -44,8 +47,8 @@ func (s *PostgresStore) Close() error {
 	return s.db.Close()
 }
 
-//go:embed migrations/001_initial.sql
-var initialMigration string
+//go:embed migrations/*.sql
+var migrationFiles embed.FS
 
 func (s *PostgresStore) Migrate(ctx context.Context) error {
 	if s == nil || s.db == nil {
@@ -56,8 +59,38 @@ func (s *PostgresStore) Migrate(ctx context.Context) error {
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if _, err := tx.ExecContext(ctx, initialMigration); err != nil {
+	if _, err := tx.ExecContext(ctx, `
+		CREATE TABLE IF NOT EXISTS schema_migrations (
+			version TEXT PRIMARY KEY,
+			applied_at TIMESTAMPTZ NOT NULL
+		)
+	`); err != nil {
 		return err
+	}
+	files, err := fs.Glob(migrationFiles, "migrations/*.sql")
+	if err != nil {
+		return err
+	}
+	sort.Strings(files)
+	for _, filename := range files {
+		version := path.Base(filename)
+		var applied bool
+		if err := tx.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM schema_migrations WHERE version = $1)", version).Scan(&applied); err != nil {
+			return err
+		}
+		if applied {
+			continue
+		}
+		migration, err := migrationFiles.ReadFile(filename)
+		if err != nil {
+			return err
+		}
+		if _, err := tx.ExecContext(ctx, string(migration)); err != nil {
+			return fmt.Errorf("apply migration %s: %w", version, err)
+		}
+		if _, err := tx.ExecContext(ctx, "INSERT INTO schema_migrations (version, applied_at) VALUES ($1, $2)", version, time.Now().UTC()); err != nil {
+			return err
+		}
 	}
 	return tx.Commit()
 }

@@ -16,8 +16,9 @@ backend-go/
 ```
 
 The Dockerfile builds `cmd/server` into `/usr/local/bin/chihuo-api`.
-The binary runs the idempotent PostgreSQL migration before serving requests
-when `DATABASE_URL` is configured.
+The release flow runs the idempotent PostgreSQL migration in a Kubernetes Job
+before rolling out the API. The binary still performs the same idempotent
+migration during startup as a compatibility fallback.
 
 The API must listen on `0.0.0.0:4000` by default and expose:
 
@@ -44,9 +45,10 @@ docker compose \
 The PostgreSQL data volume is named `chihuo-go-postgres`; do not remove it
 when troubleshooting.
 
-When `DATABASE_URL` is present, the API connects to PostgreSQL, runs the
-idempotent migration, and uses durable database writes. Without it, the API
-uses the in-memory store for local tests.
+When `DATABASE_URL` is present, the API connects to PostgreSQL and uses durable
+database writes. The release Job runs the idempotent migration before the API
+rollout. Without `DATABASE_URL`, the API uses the in-memory store for local
+tests.
 
 Redis is optional. Enable the Compose profile and configure the API URL:
 
@@ -141,11 +143,49 @@ overlay for mutable tags.
 
 ### Migration status
 
-The API runs the idempotent migration during startup when `DATABASE_URL` is
-configured. For a multi-replica production deployment, prefer running the
-migration once in a release Job before rolling out the API, or use a separate
-migration command in the release pipeline. Do not silently run schema changes
-from every API replica.
+The base Kustomize target includes `chihuo-go-migrate`, a one-shot Job using the
+same API image as the Deployment. It executes the binary's dedicated
+`migrate` command and exits only after the idempotent migration succeeds.
+
+Apply the non-API resources and migration Job first. The label selectors below
+keep the API Deployment, Service, and Ingress out of the first step:
+
+```bash
+kubectl apply -k deploy/go/k8s \
+  -l 'app.kubernetes.io/name!=chihuo-go-api'
+kubectl -n chihuo-go wait \
+  --for=condition=complete \
+  job/chihuo-go-migrate \
+  --timeout=10m
+kubectl apply -k deploy/go/k8s \
+  -l 'app.kubernetes.io/name=chihuo-go-api'
+kubectl -n chihuo-go rollout status \
+  deployment/chihuo-go-api \
+  --timeout=10m
+```
+
+On a later release, a Kubernetes Job is immutable. Delete only the completed
+migration Job before applying the new image or migration version:
+
+```bash
+kubectl -n chihuo-go delete job/chihuo-go-migrate --ignore-not-found
+```
+
+Use a release-specific Job name in a private overlay when retaining migration
+history is required. Do not run a plain `kubectl apply -k deploy/go/k8s` in the
+production release sequence, because it applies the API resources before the
+explicit migration gate.
+
+The API Deployment no longer runs schema migrations on startup. This prevents
+three replicas from racing on schema changes. Compose uses a completed
+`migrate` service before starting the API:
+
+```yaml
+command: ["/usr/local/bin/chihuo-api"]
+args: ["migrate"]
+```
+
+Do not silently run incompatible schema changes from multiple API replicas.
 
 For production, replace the in-cluster PostgreSQL and Redis resources with
 managed services, use an external Secret manager, add TLS to the Ingress, and

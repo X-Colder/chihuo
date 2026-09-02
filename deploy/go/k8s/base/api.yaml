@@ -39,6 +39,10 @@ spec:
         - name: api
           image: chihuo-go-api:local
           imagePullPolicy: IfNotPresent
+          # Apply the migration Job and wait for completion before rolling out
+          # this Deployment. The binary currently keeps an idempotent startup
+          # migration as a compatibility fallback until a migrate-only entrypoint
+          # is introduced.
           command: ["/usr/local/bin/chihuo-api"]
           securityContext:
             allowPrivilegeEscalation: false
