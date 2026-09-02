@@ -12,6 +12,7 @@ import (
 	"github.com/X-Colder/chihuo/backend-go/internal/config"
 	"github.com/X-Colder/chihuo/backend-go/internal/logging"
 	"github.com/X-Colder/chihuo/backend-go/internal/ratelimit"
+	"github.com/X-Colder/chihuo/backend-go/internal/safety"
 	"github.com/X-Colder/chihuo/backend-go/internal/store"
 )
 
@@ -22,6 +23,7 @@ type Server struct {
 	logger           *slog.Logger
 	provider         WeChatLoginProvider
 	limiter          ratelimit.Limiter
+	safetyService    safety.Service
 	mux              *http.ServeMux
 	idempotencyLocks sync.Map
 }
@@ -68,13 +70,14 @@ func NewWithWeChatProvider(cfg config.Config, dataStore store.Store, logger *slo
 		return nil, err
 	}
 	server := &Server{
-		store:    dataStore,
-		signer:   signer,
-		config:   cfg,
-		logger:   logger,
-		provider: provider,
-		limiter:  limiter,
-		mux:      http.NewServeMux(),
+		store:         dataStore,
+		signer:        signer,
+		config:        cfg,
+		logger:        logger,
+		provider:      provider,
+		limiter:       limiter,
+		safetyService: safety.NewMemoryService(),
+		mux:           http.NewServeMux(),
 	}
 	server.registerRoutes()
 	return server, nil

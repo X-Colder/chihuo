@@ -37,4 +37,8 @@ func (s *Server) registerRoutes() {
 	s.mux.Handle("PATCH /v1/admin/campaigns/{id}/review", s.requireRoles(domain.RoleAdmin)(http.HandlerFunc(s.handleReviewCampaign)))
 	s.mux.Handle("GET /v1/admin/merchants", s.requireRoles(domain.RoleAdmin)(http.HandlerFunc(s.handleAdminMerchants)))
 	s.mux.Handle("PATCH /v1/admin/merchants/{id}/review", s.requireRoles(domain.RoleAdmin)(http.HandlerFunc(s.handleReviewMerchant)))
+
+	s.mux.Handle("POST /v1/merchant/safety/incidents", s.requireRoles(domain.RoleMerchant, domain.RoleAdmin)(http.HandlerFunc(s.handleCreateSafetyIncident)))
+	s.mux.Handle("GET /v1/merchant/safety/incidents", s.requireRoles(domain.RoleMerchant, domain.RoleAdmin)(http.HandlerFunc(s.handleListSafetyIncidents)))
+	s.mux.Handle("PATCH /v1/merchant/safety/incidents/{id}", s.requireRoles(domain.RoleMerchant, domain.RoleAdmin)(http.HandlerFunc(s.handleTransitionSafetyIncident)))
 }

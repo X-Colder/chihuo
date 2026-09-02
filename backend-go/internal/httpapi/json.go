@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/X-Colder/chihuo/backend-go/internal/domain"
+	"github.com/X-Colder/chihuo/backend-go/internal/safety"
 	"github.com/X-Colder/chihuo/backend-go/internal/store"
 )
 
@@ -192,6 +193,14 @@ func (s *Server) writeOperationError(w http.ResponseWriter, r *http.Request, err
 		writeError(w, r, http.StatusForbidden, "FORBIDDEN", "operation is not allowed", nil)
 	case errors.Is(err, store.ErrInvalid):
 		writeError(w, r, http.StatusConflict, "INVALID_STATE", "resource is not in a valid state for this operation", nil)
+	case errors.Is(err, safety.ErrNotFound):
+		writeError(w, r, http.StatusNotFound, "SAFETY_NOT_FOUND", "safety resource not found", nil)
+	case errors.Is(err, safety.ErrConflict):
+		writeError(w, r, http.StatusConflict, "SAFETY_CONFLICT", "safety resource conflict", nil)
+	case errors.Is(err, safety.ErrInvalidState), errors.Is(err, safety.ErrInvalidTransition):
+		writeError(w, r, http.StatusConflict, "SAFETY_INVALID_STATE", "safety state transition is invalid", nil)
+	case errors.Is(err, safety.ErrValidation):
+		writeError(w, r, http.StatusBadRequest, "SAFETY_VALIDATION_ERROR", "safety data is invalid", nil)
 	default:
 		s.logger.Error("operation failed", "request_id", requestID(r.Context()), "error", err)
 		writeError(w, r, http.StatusInternalServerError, "INTERNAL_ERROR", "internal server error", nil)
