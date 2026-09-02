@@ -1,0 +1,68 @@
+.safety-note {
+  margin-bottom: 26rpx;
+  padding: 22rpx;
+  border: 1rpx solid #eadfc9;
+  border-radius: 12rpx;
+  background: #fff7e9;
+}
+
+.note-title,
+.note-text {
+  display: block;
+}
+
+.note-title {
+  color: #98621e;
+  font-weight: 700;
+}
+
+.note-text {
+  margin-top: 8rpx;
+  color: #8a765a;
+  font-size: 23rpx;
+  line-height: 1.5;
+}
+
+.record-time {
+  display: block;
+  margin-top: 8rpx;
+}
+
+.record-description {
+  display: block;
+  margin-top: 16rpx;
+  color: #5f6f67;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.overlay {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(21, 37, 30, 0.42);
+}
+
+.form-sheet {
+  width: 100%;
+  padding: 30rpx 28rpx 48rpx;
+  border-radius: 22rpx 22rpx 0 0;
+  background: #ffffff;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.close-text {
+  color: #718078;
+  font-size: 24rpx;
+}

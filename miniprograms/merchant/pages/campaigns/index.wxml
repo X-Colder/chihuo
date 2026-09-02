@@ -1,0 +1,42 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <text class="eyebrow">CAMPAIGNS</text>
+      <text class="page-title">预售活动</text>
+      <text class="page-subtitle">报价入选并通过平台审核后，餐品会在这里进入预售。</text>
+    </view>
+  </view>
+
+  <view class="info-banner">
+    <text class="info-title">先报价，后生产</text>
+    <text class="info-text">平台会将消费者的预订量、生产规格和配送时间汇总给你，减少盲目备货。</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">正在加载预售活动...</view>
+  <view wx:elif="{{error}}" class="error">
+    <text>{{error}}</text>
+    <button class="secondary-btn retry-btn" bindtap="load">重新加载</button>
+  </view>
+  <view wx:elif="{{empty}}" class="empty">还没有预售活动</view>
+  <block wx:else>
+    <view wx:for="{{campaigns}}" wx:key="id" class="card">
+      <view class="card-topline">
+        <view>
+          <text class="card-title">{{item.title}}</text>
+          <text class="muted campaign-id">活动 {{item.id}}</text>
+        </view>
+        <text class="status {{item.statusClass}}">{{item.status}}</text>
+      </view>
+      <view class="meta-row">
+        <text class="meta">已订 {{item.current}} 份</text>
+        <text class="meta">上限 {{item.maximum}} 份</text>
+        <text class="meta">{{item.unitPrice}} / 份</text>
+      </view>
+      <view class="tag-row">
+        <text class="tag">{{item.spec}}</text>
+      </view>
+      <view class="detail-row"><text class="muted">生产开始</text><text>{{item.startsAt}}</text></view>
+      <view class="detail-row"><text class="muted">配送点</text><text>{{item.pickupPoint}}</text></view>
+    </view>
+  </block>
+</view>

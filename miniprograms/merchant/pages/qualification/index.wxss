@@ -1,0 +1,91 @@
+.profile-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 26rpx;
+  border-radius: 12rpx;
+  background: #1f6b57;
+  color: #ffffff;
+}
+
+.profile-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 74rpx;
+  height: 74rpx;
+  border-radius: 50%;
+  background: #e5f2e8;
+  color: #1f6b57;
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.profile-copy {
+  flex: 1;
+  margin-left: 18rpx;
+}
+
+.profile-name {
+  display: block;
+  font-size: 31rpx;
+  font-weight: 700;
+}
+
+.profile-copy .muted {
+  display: block;
+  margin-top: 8rpx;
+  color: #cfe6d7;
+}
+
+.profile-card .status {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.qualification-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid #edf0ed;
+}
+
+.qualification-row:last-child {
+  border-bottom: 0;
+}
+
+.small-title {
+  font-size: 27rpx;
+}
+
+.row-note {
+  display: block;
+  margin-top: 8rpx;
+}
+
+.placeholder-card {
+  margin-top: 20rpx;
+  padding: 26rpx;
+  border: 1rpx dashed #bbcec0;
+  border-radius: 12rpx;
+  background: #f1f7f1;
+}
+
+.placeholder-title,
+.placeholder-text {
+  display: block;
+}
+
+.placeholder-title {
+  color: #1f6b57;
+  font-size: 29rpx;
+  font-weight: 700;
+}
+
+.placeholder-text {
+  margin: 12rpx 0 22rpx;
+  color: #5f6f67;
+  font-size: 24rpx;
+  line-height: 1.55;
+}

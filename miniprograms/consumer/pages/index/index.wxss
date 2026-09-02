@@ -1,0 +1,105 @@
+.notice {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+  padding: 22rpx;
+  border: 1rpx solid #dbe9de;
+  border-radius: 12rpx;
+  background: #eaf5ed;
+}
+
+.notice-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: #1f6b57;
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.notice-copy {
+  flex: 1;
+  margin-left: 18rpx;
+}
+
+.notice-title,
+.notice-text {
+  display: block;
+}
+
+.notice-title {
+  color: #1f6b57;
+  font-weight: 700;
+}
+
+.notice-text {
+  margin-top: 7rpx;
+  color: #527061;
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toolbar .section-title {
+  margin: 0 0 18rpx;
+}
+
+.demand-card {
+  position: relative;
+}
+
+.card-topline,
+.card-footer,
+.progress-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progress-line {
+  margin-top: 22rpx;
+}
+
+.progress-track {
+  flex: 1;
+  height: 10rpx;
+  overflow: hidden;
+  border-radius: 10rpx;
+  background: #e8eeea;
+}
+
+.progress-value {
+  height: 100%;
+  border-radius: 10rpx;
+  background: #62a685;
+}
+
+.progress-text {
+  margin-left: 16rpx;
+  color: #527061;
+  font-size: 23rpx;
+}
+
+.card-footer {
+  margin-top: 12rpx;
+}
+
+.link-text {
+  color: #1f6b57;
+  font-size: 24rpx;
+}
+
+.retry-btn {
+  width: 300rpx;
+  margin-top: 24rpx;
+  line-height: 76rpx;
+}

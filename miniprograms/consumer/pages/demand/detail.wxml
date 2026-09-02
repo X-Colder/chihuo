@@ -1,0 +1,44 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading">正在加载需求...</view>
+  <view wx:elif="{{error}}" class="error">{{error}}</view>
+  <block wx:elif="{{demand}}">
+    <view class="hero-card">
+      <view class="card-topline">
+        <text class="eyebrow">{{demand.category}}</text>
+        <text class="status {{demand.statusClass}}">{{demand.status}}</text>
+      </view>
+      <text class="hero-title">{{demand.title}}</text>
+      <text class="hero-note">{{demand.notes}}</text>
+      <view class="tag-row">
+        <text wx:for="{{demand.tags}}" wx:key="*this" class="tag">{{item}}</text>
+      </view>
+    </view>
+
+    <view class="card">
+      <text class="section-title">共同规格</text>
+      <view class="detail-row"><text class="muted">服务区域</text><text>{{demand.serviceArea}}</text></view>
+      <view class="detail-row"><text class="muted">用餐时间</text><text>{{demand.schedule}}</text></view>
+      <view class="detail-row"><text class="muted">预算范围</text><text>{{demand.budget}}</text></view>
+      <view class="detail-row"><text class="muted">成团进度</text><text>{{demand.joined}} / {{demand.target}} 人</text></view>
+      <view class="progress-track large-track"><view class="progress-value" style="width: {{demand.progress}}%;"></view></view>
+    </view>
+
+    <view class="card join-card">
+      <text class="section-title">加入这条需求</text>
+      <text class="muted">你的加入会计入聚合人数，商家只会看到匿名化的规格统计。</text>
+      <view class="field">
+        <text class="form-label">购买数量</text>
+        <input class="input" type="number" value="{{quantity}}" data-field="quantity" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="form-label">你的重量要求（可选，克）</text>
+        <input class="input" type="number" placeholder="不填则采用共同规格" value="{{weightGrams}}" data-field="weightGrams" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="form-label">补充偏好（可选）</text>
+        <input class="input" placeholder="例如：米饭软一点" value="{{preferencesText}}" data-field="preferencesText" bindinput="onInput" />
+      </view>
+      <button class="primary-btn" loading="{{joining}}" disabled="{{joining || demand.status === '已结束' || demand.status === '已驳回'}}" bindtap="join">加入需求</button>
+    </view>
+  </block>
+</view>

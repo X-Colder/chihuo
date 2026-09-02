@@ -1,0 +1,32 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading">正在加载需求...</view>
+  <view wx:elif="{{error}}" class="error">{{error}}</view>
+  <block wx:elif="{{demand}}">
+    <view class="hero-card">
+      <view class="card-topline">
+        <text class="eyebrow">{{demand.category}}</text>
+        <text class="status {{demand.statusClass}}">{{demand.status}}</text>
+      </view>
+      <text class="hero-title">{{demand.title}}</text>
+      <text class="hero-note">{{demand.notes}}</text>
+      <view class="tag-row">
+        <text wx:for="{{demand.tags}}" wx:key="*this" class="tag">{{item}}</text>
+      </view>
+    </view>
+
+    <view class="card">
+      <text class="section-title">生产参考</text>
+      <view class="detail-row"><text class="muted">服务区域</text><text>{{demand.serviceArea}}</text></view>
+      <view class="detail-row"><text class="muted">用餐时间</text><text>{{demand.schedule}}</text></view>
+      <view class="detail-row"><text class="muted">预算区间</text><text>{{demand.budget}}</text></view>
+      <view class="detail-row"><text class="muted">当前人数</text><text>{{demand.joined}} / {{demand.target}} 人</text></view>
+      <text class="hint">平台只展示匿名化聚合规格，不展示消费者姓名或疾病等个人敏感信息。</text>
+    </view>
+
+    <view class="card action-card">
+      <text class="section-title">给出生产报价</text>
+      <text class="muted">请填写单份价格、产能、食材与保存要求，平台审核后会通知消费者。</text>
+      <button class="primary-btn" bindtap="goQuote">提交报价</button>
+    </view>
+  </block>
+</view>

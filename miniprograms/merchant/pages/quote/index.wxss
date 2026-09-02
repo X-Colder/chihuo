@@ -1,0 +1,19 @@
+.page-header {
+  margin-bottom: 22rpx;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.bottom-action {
+  margin-top: 28rpx;
+}
+
+.hint {
+  display: block;
+  margin-top: 14rpx;
+  color: #7d8b84;
+  font-size: 23rpx;
+  line-height: 1.55;
+}

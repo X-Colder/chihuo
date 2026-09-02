@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: chihuo-go
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - postgres.yaml
+  - api.yaml
+  - service.yaml
+  - ingress.yaml
+images:
+  - name: chihuo-go-api
+    newName: chihuo-go-api
+    newTag: local

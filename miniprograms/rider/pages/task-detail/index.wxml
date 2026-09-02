@@ -1,0 +1,183 @@
+<view class="page-shell">
+  <view class="detail-topbar">
+    <view class="back-button" bindtap="onBack">
+      <text class="back-icon">‹</text>
+      <text>任务详情</text>
+    </view>
+    <text class="topbar-label">骑手工作台</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="state-panel">
+    <view class="loading-spinner"></view>
+    <text class="state-title">正在加载任务</text>
+    <text class="state-desc">请稍候</text>
+  </view>
+
+  <view wx:elif="{{!task}}" class="state-panel">
+    <view class="empty-icon">!</view>
+    <text class="state-title">任务不可用</text>
+    <text class="state-desc">{{error}}</text>
+    <view class="outline-button" bindtap="onBack">返回任务列表</view>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{error}}" class="notice-bar">
+      <text class="notice-icon">!</text>
+      <text class="notice-text">{{error}}</text>
+    </view>
+
+    <view class="detail-heading">
+      <view class="heading-copy">
+        <text class="section-kicker">订单 {{task.orderNo}}</text>
+        <text class="store-name">{{task.storeName}}</text>
+        <text class="updated-time">最近更新 {{task.updatedAt}}</text>
+      </view>
+      <view class="status-pill status-{{task.statusClass}}">
+        <view class="status-dot"></view>
+        <text>{{task.statusText}}</text>
+      </view>
+    </view>
+
+    <view class="route-panel">
+      <view class="route-row">
+        <view class="route-point pickup-point"></view>
+        <view class="route-copy">
+          <text class="route-label">取餐地址</text>
+          <text class="route-address">{{task.pickupAddress}}</text>
+          <text class="route-time">取餐时段 · {{task.pickupWindow}}</text>
+        </view>
+        <text class="route-state {{task.rawStatus !== 'UNASSIGNED' ? 'done' : ''}}">
+          {{task.rawStatus !== 'UNASSIGNED' ? '已领取' : '待领取'}}
+        </text>
+      </view>
+      <view class="route-connector"></view>
+      <view class="route-row">
+        <view class="route-point dropoff-point"></view>
+        <view class="route-copy">
+          <text class="route-label">送达地址</text>
+          <text class="route-address">{{task.dropoffAddress}}</text>
+          <text class="route-time">请按订单备注交付</text>
+        </view>
+        <text class="route-state {{task.isCompleted ? 'done' : ''}}">
+          {{task.isCompleted ? '已完成' : '待送达'}}
+        </text>
+      </view>
+    </view>
+
+    <view class="info-grid">
+      <view class="info-cell">
+        <text class="info-label">配送费</text>
+        <text class="info-value highlight">¥{{task.fee}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">配送距离</text>
+        <text class="info-value">{{task.distance}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">顾客</text>
+        <text class="info-value">{{task.customer}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">订单尾号</text>
+        <text class="info-value">{{task.orderTail}}</text>
+      </view>
+    </view>
+
+    <view class="content-section">
+      <view class="section-heading">
+        <view>
+          <text class="section-kicker">订单内容</text>
+          <text class="section-title">餐品信息</text>
+        </view>
+      </view>
+      <view class="food-card">
+        <view class="food-icon">餐</view>
+        <view class="food-copy">
+          <text class="food-title">{{task.itemSummary}}</text>
+          <text class="food-note">取餐时请核对数量、包装和批次。</text>
+        </view>
+      </view>
+      <view class="note-box">
+        <text class="note-icon">i</text>
+        <text class="note-text">{{task.notes}}</text>
+      </view>
+    </view>
+
+    <view class="action-panel">
+      <button
+        wx:if="{{task.actionText}}"
+        class="primary-button"
+        loading="{{submitting}}"
+        disabled="{{submitting}}"
+        bindtap="onPrimaryAction"
+      >
+        <text wx:if="{{task.actionType === 'claim'}}" class="button-icon">＋</text>
+        <text wx:elif="{{task.nextStatus === 'COMPLETED'}}" class="button-icon">✓</text>
+        <text wx:else class="button-icon">→</text>
+        <text>{{task.actionText}}</text>
+      </button>
+      <view wx:elif="{{task.isCompleted}}" class="completed-banner">
+        <text class="completed-icon">✓</text>
+        <text>该订单已完成</text>
+      </view>
+      <view wx:elif="{{task.isCancelled}}" class="completed-banner warning">
+        <text class="completed-icon">!</text>
+        <text>平台正在处理异常</text>
+      </view>
+
+      <view class="secondary-actions">
+        <view class="secondary-button" bindtap="onOpenIssue">
+          <text class="secondary-icon">!</text>
+          <text>上报配送异常</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{isMock}}" class="mock-footer">
+      <text>演示模式 · 状态操作暂存于本地</text>
+    </view>
+  </block>
+
+  <view wx:if="{{issueVisible}}" class="modal-mask" catchtap="onCloseIssue">
+    <view class="issue-modal" catchtap="noop">
+      <view class="modal-heading">
+        <view>
+          <text class="section-kicker">订单 {{task.orderNo}}</text>
+          <text class="modal-title">上报配送异常</text>
+        </view>
+        <text class="modal-close" bindtap="onCloseIssue">×</text>
+      </view>
+
+      <text class="form-label">异常类型</text>
+      <view class="issue-options">
+        <view
+          wx:for="{{issueCategories}}"
+          wx:key="*this"
+          class="issue-option {{issueCategory === item ? 'active' : ''}}"
+          data-category="{{item}}"
+          bindtap="onIssueCategory"
+        >
+          <text wx:if="{{issueCategory === item}}" class="option-check">✓</text>
+          <text>{{item}}</text>
+        </view>
+      </view>
+
+      <text class="form-label">补充说明 <text class="optional">可选</text></text>
+      <textarea
+        class="issue-textarea"
+        maxlength="300"
+        value="{{issueDescription}}"
+        placeholder="请描述现场情况，便于平台快速处理"
+        bindinput="onIssueInput"
+      ></textarea>
+      <button
+        class="primary-button modal-submit"
+        loading="{{submitting}}"
+        disabled="{{submitting}}"
+        bindtap="onSubmitIssue"
+      >
+        <text>提交异常</text>
+      </button>
+    </view>
+  </view>
+</view>

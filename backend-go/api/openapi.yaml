@@ -1,0 +1,541 @@
+openapi: 3.1.0
+info:
+  title: Chihuo API
+  version: 0.1.0
+  description: |
+    Demand-driven local food pre-sale API. Money is represented in integer
+    cents and platform fees are represented in basis points.
+servers:
+  - url: http://localhost:4000
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+  - name: Demands
+  - name: Merchant
+  - name: Campaigns
+  - name: Orders
+  - name: Admin
+paths:
+  /health/live:
+    get:
+      security: []
+      tags: [Auth]
+      responses:
+        "200":
+          description: Process is alive
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+  /health/ready:
+    get:
+      security: []
+      tags: [Auth]
+      responses:
+        "200":
+          description: Store is ready
+        "503":
+          $ref: "#/components/responses/NotReady"
+  /v1/auth/dev/wechat-login:
+    post:
+      security: []
+      tags: [Auth]
+      summary: Development login abstraction
+      description: Disabled unless DEV_LOGIN_ENABLED=true.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DevLoginRequest"
+      responses:
+        "200":
+          description: JWT session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /v1/auth/me:
+    get:
+      tags: [Auth]
+      responses:
+        "200":
+          description: Current session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /v1/demands:
+    post:
+      tags: [Demands]
+      summary: Create a demand or join a matching cluster
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDemandRequest"
+      responses:
+        "201":
+          description: New demand cluster
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+        "200":
+          description: Existing matching cluster joined
+        "409":
+          $ref: "#/components/responses/Conflict"
+    get:
+      tags: [Demands]
+      parameters:
+        - $ref: "#/components/parameters/Status"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+      responses:
+        "200":
+          description: Demand clusters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+  /v1/demands/{id}:
+    get:
+      tags: [Demands]
+      parameters:
+        - $ref: "#/components/parameters/ResourceID"
+      responses:
+        "200":
+          description: Demand cluster
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /v1/demands/{id}/join:
+    post:
+      tags: [Demands]
+      parameters:
+        - $ref: "#/components/parameters/ResourceID"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JoinDemandRequest"
+      responses:
+        "201":
+          description: Demand membership
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /v1/merchant/demands:
+    get:
+      tags: [Merchant]
+      parameters:
+        - $ref: "#/components/parameters/Status"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+      responses:
+        "200":
+          description: Demand candidates
+  /v1/merchant/offers:
+    post:
+      tags: [Merchant]
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOfferRequest"
+      responses:
+        "201":
+          description: Merchant offer
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    get:
+      tags: [Merchant]
+      responses:
+        "200":
+          description: Current merchant offers
+  /v1/merchant/campaigns:
+    post:
+      tags: [Merchant]
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCampaignRequest"
+      responses:
+        "201":
+          description: Pre-sale campaign awaiting review
+    get:
+      tags: [Merchant]
+      responses:
+        "200":
+          description: Current merchant campaigns
+  /v1/campaigns:
+    get:
+      tags: [Campaigns]
+      parameters:
+        - $ref: "#/components/parameters/Status"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+      responses:
+        "200":
+          description: Campaigns visible to the current role
+  /v1/campaigns/{id}:
+    get:
+      tags: [Campaigns]
+      parameters:
+        - $ref: "#/components/parameters/ResourceID"
+      responses:
+        "200":
+          description: Campaign
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /v1/campaigns/{id}/orders:
+    post:
+      tags: [Orders]
+      parameters:
+        - $ref: "#/components/parameters/ResourceID"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderRequest"
+      responses:
+        "201":
+          description: Pending-payment order with calculated cents
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /v1/orders:
+    get:
+      tags: [Orders]
+      parameters:
+        - $ref: "#/components/parameters/Status"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+      responses:
+        "200":
+          description: Orders scoped to the current user unless admin
+  /v1/orders/{id}:
+    get:
+      tags: [Orders]
+      parameters:
+        - $ref: "#/components/parameters/ResourceID"
+      responses:
+        "200":
+          description: Order
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /v1/admin/demands:
+    get:
+      tags: [Admin]
+      responses:
+        "200":
+          description: Demand review queue
+  /v1/admin/demands/{id}/review:
+    patch:
+      tags: [Admin]
+      parameters:
+        - $ref: "#/components/parameters/ResourceID"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewRequest"
+      responses:
+        "200":
+          description: Reviewed demand
+  /v1/admin/campaigns:
+    get:
+      tags: [Admin]
+      responses:
+        "200":
+          description: Campaign review queue
+  /v1/admin/campaigns/{id}/review:
+    patch:
+      tags: [Admin]
+      parameters:
+        - $ref: "#/components/parameters/ResourceID"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewRequest"
+      responses:
+        "200":
+          description: Reviewed campaign
+  /v1/admin/merchants:
+    get:
+      tags: [Admin]
+      parameters:
+        - $ref: "#/components/parameters/Status"
+      responses:
+        "200":
+          description: Merchant review queue
+  /v1/admin/merchants/{id}/review:
+    patch:
+      tags: [Admin]
+      parameters:
+        - $ref: "#/components/parameters/ResourceID"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewRequest"
+      responses:
+        "200":
+          description: Reviewed merchant
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    ResourceID:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      schema:
+        type: string
+        maxLength: 128
+    Status:
+      name: status
+      in: query
+      required: false
+      schema:
+        type: string
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+    Offset:
+      name: offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Forbidden:
+      description: Role or ownership denied
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Conflict:
+      description: State conflict or idempotency conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotReady:
+      description: Store is not ready
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  schemas:
+    DataResponse:
+      type: object
+      required: [data]
+      properties:
+        data: {}
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, request_id]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details: {}
+            request_id:
+              type: string
+    DevLoginRequest:
+      type: object
+      required: [code, name]
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [CONSUMER, MERCHANT, RIDER, ADMIN]
+          default: CONSUMER
+        merchant_name:
+          type: string
+    CreateDemandRequest:
+      type: object
+      required:
+        - category
+        - title
+        - service_area
+        - serving_date
+        - serving_time
+        - budget_min_cents
+        - budget_max_cents
+        - quantity
+        - weight_min_grams
+        - weight_max_grams
+      properties:
+        category: {type: string}
+        title: {type: string}
+        service_area: {type: string}
+        serving_date: {type: string, format: date}
+        serving_time: {type: string, pattern: "^\\d{2}:\\d{2}$"}
+        budget_min_cents: {type: integer, format: int64, minimum: 1}
+        budget_max_cents: {type: integer, format: int64, minimum: 1}
+        quantity: {type: integer, minimum: 1}
+        weight_min_grams: {type: integer, minimum: 1}
+        weight_max_grams: {type: integer, minimum: 1}
+        hard_constraints:
+          type: array
+          items: {type: string}
+        preferences:
+          type: array
+          items: {type: string}
+        notes: {type: string}
+        minimum_members: {type: integer, minimum: 1, default: 10}
+        maximum_members: {type: integer, minimum: 1, default: 100}
+    JoinDemandRequest:
+      type: object
+      properties:
+        quantity: {type: integer, minimum: 1, default: 1}
+        weight_grams: {type: integer, minimum: 0}
+        preferences:
+          type: array
+          items: {type: string}
+        notes: {type: string}
+    CreateOfferRequest:
+      type: object
+      required:
+        - demand_id
+        - unit_price_cents
+        - production_capacity
+        - weight_grams
+        - production_time
+        - shelf_life_minutes
+        - storage_instructions
+      properties:
+        demand_id: {type: string}
+        unit_price_cents: {type: integer, format: int64, minimum: 1}
+        production_capacity: {type: integer, minimum: 1}
+        weight_grams: {type: integer, minimum: 1}
+        ingredients: {type: array, items: {type: string}}
+        allergens: {type: array, items: {type: string}}
+        oil_level: {type: string, enum: [UNKNOWN, LOW, MEDIUM, HIGH]}
+        salt_level: {type: string, enum: [UNKNOWN, LOW, MEDIUM, HIGH]}
+        production_time: {type: string, pattern: "^\\d{2}:\\d{2}$"}
+        shelf_life_minutes: {type: integer, minimum: 1}
+        storage_instructions: {type: string}
+        notes: {type: string}
+    FoodSpec:
+      type: object
+      required: [weight_grams, production_time, shelf_life_minutes, storage_instructions]
+      properties:
+        weight_grams: {type: integer, minimum: 1}
+        ingredients: {type: array, items: {type: string}}
+        allergens: {type: array, items: {type: string}}
+        oil_level: {type: string, enum: [UNKNOWN, LOW, MEDIUM, HIGH]}
+        salt_level: {type: string, enum: [UNKNOWN, LOW, MEDIUM, HIGH]}
+        production_time: {type: string, pattern: "^\\d{2}:\\d{2}$"}
+        shelf_life_minutes: {type: integer, minimum: 1}
+        storage_instructions: {type: string}
+    CreateCampaignRequest:
+      type: object
+      required:
+        - demand_id
+        - offer_id
+        - title
+        - unit_price_cents
+        - minimum_orders
+        - maximum_orders
+        - starts_at
+        - ends_at
+        - pickup_point
+        - food_spec
+      properties:
+        demand_id: {type: string}
+        offer_id: {type: string}
+        title: {type: string}
+        description: {type: string}
+        unit_price_cents: {type: integer, format: int64, minimum: 1}
+        delivery_fee_cents: {type: integer, format: int64, minimum: 0, default: 500}
+        platform_fee_bps: {type: integer, format: int64, minimum: 0, default: 500}
+        minimum_orders: {type: integer, minimum: 1}
+        maximum_orders: {type: integer, minimum: 1}
+        starts_at: {type: string, format: date-time}
+        ends_at: {type: string, format: date-time}
+        pickup_point: {type: string}
+        food_spec:
+          $ref: "#/components/schemas/FoodSpec"
+    CreateOrderRequest:
+      type: object
+      required: [quantity, delivery_address, contact_name, contact_phone]
+      properties:
+        quantity: {type: integer, minimum: 1}
+        delivery_address: {type: string}
+        contact_name: {type: string}
+        contact_phone: {type: string}
+    ReviewRequest:
+      type: object
+      required: [status]
+      properties:
+        status: {type: string}
+        reason: {type: string}

@@ -1,0 +1,59 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <text class="eyebrow">CHIHUO / CONSUMER</text>
+      <text class="page-title">把你的需求，变成一份餐</text>
+      <text class="page-subtitle">先聚合相近需求，再让商家按真实人数生产。</text>
+    </view>
+    <button class="ghost-btn" bindtap="goPublish">发布</button>
+  </view>
+
+  <view class="notice">
+    <view class="notice-mark">聚</view>
+    <view class="notice-copy">
+      <text class="notice-title">需求聚合中</text>
+      <text class="notice-text">人数越接近成团线，商家越容易给出明确规格和价格。</text>
+    </view>
+  </view>
+
+  <view class="toolbar">
+    <text class="section-title">附近需求</text>
+    <text class="muted">{{demands.length}} 条需求</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">正在加载需求...</view>
+  <view wx:elif="{{error}}" class="error">
+    <text>{{error}}</text>
+    <button class="secondary-btn retry-btn" bindtap="load">重新加载</button>
+  </view>
+  <view wx:elif="{{empty}}" class="empty">
+    <text>还没有匹配的需求</text>
+    <button class="primary-btn retry-btn" bindtap="goPublish">发布第一条需求</button>
+  </view>
+  <block wx:else>
+    <view wx:for="{{demands}}" wx:key="id" class="card demand-card" data-id="{{item.id}}" bindtap="openDemand">
+      <view class="card-topline">
+        <text class="card-title">{{item.title}}</text>
+        <text class="status {{item.statusClass}}">{{item.status}}</text>
+      </view>
+      <view class="meta-row">
+        <text class="meta">{{item.category}}</text>
+        <text class="meta">{{item.serviceArea}}</text>
+        <text class="meta">{{item.schedule}}</text>
+      </view>
+      <view class="progress-line">
+        <view class="progress-track">
+          <view class="progress-value" style="width: {{item.progress}}%;"></view>
+        </view>
+        <text class="progress-text">{{item.joined}}/{{item.target}} 人</text>
+      </view>
+      <view class="tag-row">
+        <text wx:for="{{item.tags}}" wx:key="*this" class="tag">{{item}}</text>
+      </view>
+      <view class="card-footer">
+        <text class="muted">预算 {{item.budget}}</text>
+        <text class="link-text">查看详情 ›</text>
+      </view>
+    </view>
+  </block>
+</view>

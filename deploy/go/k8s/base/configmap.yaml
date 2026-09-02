@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chihuo-go-api-config
+data:
+  HTTP_ADDR: ":4000"
+  JWT_ISSUER: "chihuo-api"
+  JWT_TTL: "168h"
+  DEV_LOGIN_ENABLED: "false"
+  LOG_LEVEL: "info"
+  CORS_ALLOWED_ORIGINS: ""
+  DB_MAX_OPEN_CONNS: "50"
+  DB_MAX_IDLE_CONNS: "20"
+  DB_CONN_MAX_LIFETIME: "30m"
+  REDIS_ENABLED: "false"
+  REDIS_ADDR: "chihuo-go-redis:6379"
+  REDIS_DB: "0"

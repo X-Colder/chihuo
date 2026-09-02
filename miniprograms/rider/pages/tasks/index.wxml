@@ -1,0 +1,134 @@
+<view class="page-shell">
+  <view class="topbar">
+    <view>
+      <view class="brand-row">
+        <view class="brand-mark">骑</view>
+        <text class="brand-name">吃货骑手端</text>
+      </view>
+      <text class="eyebrow">配送工作台</text>
+    </view>
+    <view class="online-state">
+      <view class="online-dot"></view>
+      <text>在线接单</text>
+    </view>
+  </view>
+
+  <view class="hero-panel">
+    <view class="hero-copy">
+      <text class="hero-kicker">今日配送</text>
+      <text class="hero-title">把每一份餐，准时送到。</text>
+      <text class="hero-desc">先核对取餐点和餐品，再开始配送。</text>
+    </view>
+    <view class="hero-route">
+      <text class="route-arrow">↗</text>
+      <text>南山 · 科技园片区</text>
+    </view>
+  </view>
+
+  <view class="summary-grid">
+    <view class="summary-card accent-orange">
+      <text class="summary-label">进行中</text>
+      <text class="summary-value">{{activeCount}}</text>
+      <text class="summary-note">尽快完成取餐</text>
+    </view>
+    <view class="summary-card accent-green">
+      <text class="summary-label">今日已赚</text>
+      <text class="summary-value">¥{{income}}</text>
+      <text class="summary-note">{{completedCount}} 单已完成</text>
+    </view>
+  </view>
+
+  <view class="section-heading">
+    <view>
+      <text class="section-kicker">任务中心</text>
+      <text class="section-title">配送任务</text>
+    </view>
+    <text class="section-hint">下拉刷新</text>
+  </view>
+
+  <scroll-view class="filter-scroll" scroll-x="true" show-scrollbar="false">
+    <view class="filter-row">
+      <view
+        wx:for="{{filters}}"
+        wx:key="key"
+        class="filter-chip {{activeFilter === item.key ? 'active' : ''}}"
+        data-filter="{{item.key}}"
+        bindtap="onFilterTap"
+      >
+        <text>{{item.label}}</text>
+        <text class="filter-count">{{item.count}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view wx:if="{{error}}" class="notice-bar">
+    <text class="notice-icon">!</text>
+    <text class="notice-text">{{error}}</text>
+    <text class="notice-action" bindtap="onRetry">重试</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="state-panel">
+    <view class="loading-spinner"></view>
+    <text class="state-title">正在加载任务</text>
+    <text class="state-desc">请稍候</text>
+  </view>
+
+  <view wx:elif="{{empty}}" class="state-panel empty-panel">
+    <view class="empty-icon">✓</view>
+    <text class="state-title">这个筛选下暂无任务</text>
+    <text class="state-desc">新的配送任务会出现在这里</text>
+  </view>
+
+  <view wx:else class="task-list">
+    <view
+      wx:for="{{visibleTasks}}"
+      wx:key="id"
+      class="task-card"
+      data-id="{{item.id}}"
+      bindtap="onTaskTap"
+    >
+      <view class="task-card-head">
+        <view class="status-pill status-{{item.statusClass}}">
+          <view class="status-dot"></view>
+          <text>{{item.statusText}}</text>
+        </view>
+        <text class="task-fee">¥{{item.fee}}</text>
+      </view>
+
+      <view class="task-title-row">
+        <text class="store-name">{{item.storeName}}</text>
+        <text class="order-tail">尾号 {{item.orderTail}}</text>
+      </view>
+
+      <view class="route-block">
+        <view class="route-point pickup-point"></view>
+        <view class="route-content">
+          <text class="route-label">取餐</text>
+          <text class="route-address">{{item.pickupAddress}}</text>
+        </view>
+        <view class="route-line"></view>
+        <view class="route-point dropoff-point"></view>
+        <view class="route-content">
+          <text class="route-label">送达</text>
+          <text class="route-address">{{item.dropoffAddress}}</text>
+        </view>
+      </view>
+
+      <view class="task-card-foot">
+        <view class="meta-item">
+          <text class="meta-icon">◷</text>
+          <text>{{item.pickupWindow}}</text>
+        </view>
+        <view class="meta-item">
+          <text class="meta-icon">↗</text>
+          <text>{{item.distance}}</text>
+        </view>
+        <text class="card-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{isMock}}" class="mock-footer">
+    <text>演示模式 · 数据来自本地示例</text>
+  </view>
+</view>

@@ -1,0 +1,74 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <text class="eyebrow">MERCHANT OFFER</text>
+      <text class="page-title">提交可执行的生产方案</text>
+      <text class="page-subtitle">{{demandTitle}}</text>
+    </view>
+  </view>
+
+  <view class="form-card">
+    <view class="form-row">
+      <view class="field">
+        <text class="form-label">单份价格（元）</text>
+        <input class="input" type="digit" data-field="price" value="{{form.price}}" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="form-label">预计产能（份）</text>
+        <input class="input" type="number" data-field="capacity" value="{{form.capacity}}" bindinput="onInput" />
+      </view>
+    </view>
+    <view class="form-row">
+      <view class="field">
+        <text class="form-label">单份重量（克）</text>
+        <input class="input" type="number" data-field="weightGrams" value="{{form.weightGrams}}" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="form-label">制作时间</text>
+        <input class="input" placeholder="例如：11:00" data-field="productionTime" value="{{form.productionTime}}" bindinput="onInput" />
+      </view>
+    </view>
+    <view class="form-row">
+      <view class="field">
+        <text class="form-label">油量</text>
+        <picker class="picker" range="{{oilOptions}}" value="{{oilIndex}}" bindchange="onOilChange">
+          <text>{{oilOptions[oilIndex]}}</text>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="form-label">盐量</text>
+        <picker class="picker" range="{{saltOptions}}" value="{{saltIndex}}" bindchange="onSaltChange">
+          <text>{{saltOptions[saltIndex]}}</text>
+        </picker>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-card">
+    <view class="field">
+      <text class="form-label">主要食材</text>
+      <input class="input" placeholder="用逗号分隔，例如：鸡腿肉,西兰花,米饭" data-field="ingredientsText" value="{{form.ingredientsText}}" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <text class="form-label">过敏原</text>
+      <input class="input" placeholder="用逗号分隔，没有请填无" data-field="allergensText" value="{{form.allergensText}}" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <text class="form-label">保质时长（分钟）</text>
+      <input class="input" type="number" data-field="shelfLifeMinutes" value="{{form.shelfLifeMinutes}}" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <text class="form-label">储存与食用说明</text>
+      <textarea class="textarea" maxlength="300" placeholder="例如：常温 2 小时内食用，避免阳光直射" data-field="storageInstructions" value="{{form.storageInstructions}}" bindinput="onInput"></textarea>
+    </view>
+    <view class="field">
+      <text class="form-label">给平台的补充说明（可选）</text>
+      <textarea class="textarea" maxlength="1000" data-field="notes" value="{{form.notes}}" bindinput="onInput"></textarea>
+    </view>
+  </view>
+
+  <view class="bottom-action">
+    <button class="primary-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submit">提交报价</button>
+    <text class="hint">报价中的食材、过敏原、重量和保存要求会成为后续商品与批次信息的一部分，请如实填写。</text>
+  </view>
+</view>

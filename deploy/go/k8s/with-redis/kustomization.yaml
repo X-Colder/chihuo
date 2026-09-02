@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: chihuo-go
+resources:
+  - ../base
+  - redis.yaml
+images:
+  - name: chihuo-go-api
+    newName: chihuo-go-api
+    newTag: local
+patches:
+  - path: patch-api-redis.yaml

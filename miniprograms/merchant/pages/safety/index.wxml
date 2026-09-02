@@ -1,0 +1,61 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <text class="eyebrow">FOOD SAFETY</text>
+      <text class="page-title">食品安全记录</text>
+      <text class="page-subtitle">记录批次、投诉和整改信息，平台会保留处理轨迹。</text>
+    </view>
+    <button class="ghost-btn" bindtap="showCreate">新增</button>
+  </view>
+
+  <view class="safety-note">
+    <text class="note-title">如发现风险，先暂停涉事批次</text>
+    <text class="note-text">及时保留订单、生产和配送证据，并通过本页向平台报备。</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">正在加载安全记录...</view>
+  <view wx:elif="{{error}}" class="error">
+    <text>{{error}}</text>
+    <button class="secondary-btn retry-btn" bindtap="load">重新加载</button>
+  </view>
+  <view wx:elif="{{empty}}" class="empty">暂时没有食品安全记录</view>
+  <block wx:else>
+    <view wx:for="{{records}}" wx:key="id" class="card">
+      <view class="card-topline">
+        <view>
+          <text class="card-title">{{item.title}}</text>
+          <text class="muted record-time">{{item.createdAt}}</text>
+        </view>
+        <text class="status {{item.statusClass}}">{{item.status}}</text>
+      </view>
+      <view class="tag-row">
+        <text class="tag">严重程度：{{item.severityText}}</text>
+      </view>
+      <text class="record-description">{{item.description}}</text>
+    </view>
+  </block>
+
+  <view wx:if="{{showForm}}" class="overlay">
+    <view class="form-sheet">
+      <view class="sheet-header">
+        <text class="card-title">新增安全记录</text>
+        <text class="close-text" bindtap="hideCreate">关闭</text>
+      </view>
+      <view class="field">
+        <text class="form-label">记录标题</text>
+        <input class="input" placeholder="例如：配送包装破损" data-field="title" value="{{form.title}}" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="form-label">严重程度</text>
+        <picker class="picker" range="{{severityOptions}}" value="{{severityIndex}}" bindchange="onSeverityChange">
+          <text>{{severityOptions[severityIndex]}}</text>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="form-label">情况说明</text>
+        <textarea class="textarea" maxlength="2000" placeholder="描述发生时间、影响范围和已采取措施" data-field="description" value="{{form.description}}" bindinput="onInput"></textarea>
+      </view>
+      <button class="primary-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submit">提交记录</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,76 @@
+.merchant-line {
+  display: block;
+  margin-top: 8rpx;
+}
+
+.campaign-description {
+  display: block;
+  margin-top: 18rpx;
+  color: #5f6f67;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.warning-tag {
+  background: #fff3e2;
+  color: #a36a2a;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 22rpx;
+}
+
+.primary-small-btn {
+  padding: 0 24rpx;
+  border-radius: 10rpx;
+  background: #1f6b57;
+  color: #ffffff;
+  font-size: 24rpx;
+  line-height: 68rpx;
+}
+
+.overlay {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(21, 37, 30, 0.42);
+}
+
+.order-sheet {
+  width: 100%;
+  padding: 30rpx 28rpx 48rpx;
+  border-radius: 22rpx 22rpx 0 0;
+  background: #ffffff;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.close-text {
+  color: #718078;
+  font-size: 24rpx;
+}
+
+.price-summary {
+  display: flex;
+  justify-content: space-between;
+  margin: 24rpx 0;
+  color: #34463c;
+  font-weight: 600;
+}
+
+.address-input {
+  min-height: 110rpx;
+}

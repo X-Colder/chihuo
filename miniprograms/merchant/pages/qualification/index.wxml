@@ -1,0 +1,39 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <text class="eyebrow">QUALIFICATION</text>
+      <text class="page-title">资质中心</text>
+      <text class="page-subtitle">平台会核验主体、食品经营资质与实际加工地址。</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">正在加载资质状态...</view>
+  <view wx:elif="{{error}}" class="error">{{error}}</view>
+  <block wx:else>
+    <view class="profile-card">
+      <view class="profile-mark">商</view>
+      <view class="profile-copy">
+        <text class="profile-name">{{profile.name}}</text>
+        <text class="muted">商家编号：{{profile.id}}</text>
+      </view>
+      <text class="status {{profile.statusClass}}">{{profile.statusText}}</text>
+    </view>
+
+    <view class="card">
+      <text class="section-title">审核项目</text>
+      <view wx:for="{{items}}" wx:key="name" class="qualification-row">
+        <view>
+          <text class="card-title small-title">{{item.name}}</text>
+          <text class="muted row-note">{{item.note}}</text>
+        </view>
+        <text class="status {{item.statusClass}}">{{item.status}}</text>
+      </view>
+    </view>
+
+    <view class="placeholder-card">
+      <text class="placeholder-title">证照上传与现场核验</text>
+      <text class="placeholder-text">当前版本保留资料审核占位，正式接入后可上传营业执照、食品经营许可证和加工地址照片。</text>
+      <button class="secondary-btn" bindtap="showPlaceholder">查看接入说明</button>
+    </view>
+  </block>
+</view>

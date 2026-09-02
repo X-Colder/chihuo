@@ -1,0 +1,21 @@
+.order-time {
+  display: block;
+  margin-top: 8rpx;
+}
+
+.order-card .detail-row {
+  padding: 14rpx 0;
+}
+
+.address {
+  max-width: 430rpx;
+  text-align: right;
+  line-height: 1.45;
+}
+
+.order-card .card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18rpx;
+}

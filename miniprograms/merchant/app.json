@@ -1,0 +1,44 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/demand/detail",
+    "pages/quote/index",
+    "pages/campaigns/index",
+    "pages/qualification/index",
+    "pages/safety/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "吃货商家",
+    "navigationBarBackgroundColor": "#f5f7f2",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5f7f2",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": true
+  },
+  "tabBar": {
+    "color": "#718078",
+    "selectedColor": "#1f6b57",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "需求大厅"
+      },
+      {
+        "pagePath": "pages/campaigns/index",
+        "text": "预售活动"
+      },
+      {
+        "pagePath": "pages/qualification/index",
+        "text": "资质"
+      },
+      {
+        "pagePath": "pages/safety/index",
+        "text": "食品安全"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

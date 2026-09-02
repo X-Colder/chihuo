@@ -1,0 +1,65 @@
+.summary-row {
+  display: flex;
+  gap: 14rpx;
+  margin-bottom: 32rpx;
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 0;
+  padding: 20rpx 16rpx;
+  border: 1rpx solid #e3ebe5;
+  border-radius: 12rpx;
+  background: #ffffff;
+}
+
+.summary-number,
+.summary-label {
+  display: block;
+}
+
+.summary-number {
+  color: #1f6b57;
+  font-size: 38rpx;
+  font-weight: 700;
+}
+
+.summary-label {
+  margin-top: 8rpx;
+  color: #718078;
+  font-size: 22rpx;
+}
+
+.toolbar .section-title {
+  margin-top: 0;
+}
+
+.demand-category {
+  display: block;
+  margin-top: 8rpx;
+}
+
+.capacity {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 18rpx;
+  padding: 18rpx;
+  border-radius: 10rpx;
+  background: #f2f7f2;
+}
+
+.capacity-number {
+  color: #1f6b57;
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.card-footer {
+  margin-top: 16rpx;
+}
+
+.link-text {
+  color: #1f6b57;
+  font-size: 24rpx;
+}

@@ -1,0 +1,73 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <text class="eyebrow">READY TO ORDER</text>
+      <text class="page-title">正在预售</text>
+      <text class="page-subtitle">商家已根据聚合需求确认规格，达到条件后集中制作。</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">正在加载预售商品...</view>
+  <view wx:elif="{{error}}" class="error">
+    <text>{{error}}</text>
+    <button class="secondary-btn retry-btn" bindtap="load">重新加载</button>
+  </view>
+  <view wx:elif="{{empty}}" class="empty">暂时没有开放中的预售商品</view>
+  <block wx:else>
+    <view wx:for="{{campaigns}}" wx:key="id" class="card campaign-card">
+      <view class="card-topline">
+        <view>
+          <text class="card-title">{{item.title}}</text>
+          <text class="muted merchant-line">集中配送 · {{item.pickupPoint}}</text>
+        </view>
+        <text class="amount">{{item.price}}</text>
+      </view>
+      <text class="campaign-description">{{item.description}}</text>
+      <view class="tag-row">
+        <text class="tag">{{item.weight}}</text>
+        <text class="tag">{{item.oilLevel}}</text>
+        <text class="tag">{{item.saltLevel}}</text>
+        <text wx:if="{{item.allergensText}}" class="tag warning-tag">含{{item.allergensText}}</text>
+      </view>
+      <view class="meta-row">
+        <text class="meta">开售 {{item.startsAt}}</text>
+        <text class="meta">余量 {{item.stock}} 份</text>
+      </view>
+      <view class="card-footer">
+        <text class="muted">{{item.shelfLife}}</text>
+        <button class="primary-small-btn" data-id="{{item.id}}" bindtap="showOrderForm">立即预订</button>
+      </view>
+    </view>
+  </block>
+
+  <view wx:if="{{showOrder}}" class="overlay">
+    <view class="order-sheet">
+      <view class="sheet-header">
+        <text class="card-title">确认预订</text>
+        <text class="close-text" bindtap="hideOrderForm">关闭</text>
+      </view>
+      <text class="muted">{{selected.title}} · {{selected.price}} / 份</text>
+      <view class="field">
+        <text class="form-label">购买数量</text>
+        <input class="input" type="number" value="{{orderForm.quantity}}" data-field="quantity" bindinput="onOrderInput" />
+      </view>
+      <view class="field">
+        <text class="form-label">联系人</text>
+        <input class="input" placeholder="收餐人姓名" value="{{orderForm.contactName}}" data-field="contactName" bindinput="onOrderInput" />
+      </view>
+      <view class="field">
+        <text class="form-label">联系电话</text>
+        <input class="input" type="number" placeholder="手机号" value="{{orderForm.contactPhone}}" data-field="contactPhone" bindinput="onOrderInput" />
+      </view>
+      <view class="field">
+        <text class="form-label">配送地址</text>
+        <textarea class="textarea address-input" placeholder="填写园区、楼栋、前台等具体位置" value="{{orderForm.deliveryAddress}}" data-field="deliveryAddress" bindinput="onOrderInput"></textarea>
+      </view>
+      <view class="price-summary">
+        <text>商品小计</text>
+        <text>{{orderTotal}}</text>
+      </view>
+      <button class="primary-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="placeOrder">确认下单并支付</button>
+    </view>
+  </view>
+</view>

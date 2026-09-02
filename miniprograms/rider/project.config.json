@@ -1,0 +1,20 @@
+{
+  "description": "吃货骑手端",
+  "packOptions": {
+    "ignore": []
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": true,
+    "minified": false,
+    "compileHotReLoad": true,
+    "coverView": true,
+    "enhance": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "3.7.3",
+  "appid": "touristappid",
+  "projectname": "chihuo-rider",
+  "condition": {}
+}

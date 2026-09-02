@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: chihuo-go-postgres
+  labels:
+    app.kubernetes.io/name: chihuo-go-postgres
+    app.kubernetes.io/part-of: chihuo
+spec:
+  selector:
+    app.kubernetes.io/name: chihuo-go-postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: chihuo-go-postgres
+  labels:
+    app.kubernetes.io/name: chihuo-go-postgres
+    app.kubernetes.io/part-of: chihuo
+spec:
+  serviceName: chihuo-go-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: chihuo-go-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: chihuo-go-postgres
+        app.kubernetes.io/part-of: chihuo
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 999
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: chihuo
+            - name: POSTGRES_USER
+              value: chihuo
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chihuo-go-api-secret
+                  key: POSTGRES_PASSWORD
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi

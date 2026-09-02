@@ -1,0 +1,39 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/publish/index",
+    "pages/demand/detail",
+    "pages/campaigns/index",
+    "pages/orders/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "吃货",
+    "navigationBarBackgroundColor": "#f5f7f2",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5f7f2",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": true
+  },
+  "tabBar": {
+    "color": "#718078",
+    "selectedColor": "#1f6b57",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "需求广场"
+      },
+      {
+        "pagePath": "pages/campaigns/index",
+        "text": "预售商品"
+      },
+      {
+        "pagePath": "pages/orders/index",
+        "text": "订单"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

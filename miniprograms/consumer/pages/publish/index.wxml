@@ -1,0 +1,92 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <text class="eyebrow">NEW DEMAND</text>
+      <text class="page-title">说清楚你想吃什么</text>
+      <text class="page-subtitle">必需条件会用于聚合，偏好条件会作为商家报价参考。</text>
+    </view>
+  </view>
+
+  <view class="form-card">
+    <view class="field">
+      <text class="form-label">餐品名称</text>
+      <input class="input" placeholder="例如：低油鸡肉饭" data-field="title" value="{{form.title}}" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <text class="form-label">餐品分类</text>
+      <input class="input" placeholder="例如：工作餐 / 家庭餐" data-field="category" value="{{form.category}}" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <text class="form-label">配送区域</text>
+      <input class="input" placeholder="例如：科技园 A 区" data-field="serviceArea" value="{{form.serviceArea}}" bindinput="onInput" />
+    </view>
+    <view class="form-row">
+      <view class="field">
+        <text class="form-label">用餐日期</text>
+        <picker class="picker" mode="date" value="{{form.servingDate}}" data-field="servingDate" bindchange="onPickerChange">
+          <text>{{form.servingDate}}</text>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="form-label">用餐时间</text>
+        <picker class="picker" mode="time" value="{{form.servingTime}}" data-field="servingTime" bindchange="onPickerChange">
+          <text>{{form.servingTime}}</text>
+        </picker>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-card">
+    <text class="section-title">规格与价格</text>
+    <view class="form-row">
+      <view class="field">
+        <text class="form-label">预算下限（元）</text>
+        <input class="input" type="number" data-field="budgetMin" value="{{form.budgetMin}}" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="form-label">预算上限（元）</text>
+        <input class="input" type="number" data-field="budgetMax" value="{{form.budgetMax}}" bindinput="onInput" />
+      </view>
+    </view>
+    <view class="form-row">
+      <view class="field">
+        <text class="form-label">重量下限（克）</text>
+        <input class="input" type="number" data-field="weightMinGrams" value="{{form.weightMinGrams}}" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="form-label">重量上限（克）</text>
+        <input class="input" type="number" data-field="weightMaxGrams" value="{{form.weightMaxGrams}}" bindinput="onInput" />
+      </view>
+    </view>
+    <view class="form-row">
+      <view class="field">
+        <text class="form-label">最低成团人数</text>
+        <input class="input" type="number" data-field="minimumMembers" value="{{form.minimumMembers}}" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="form-label">最多接收人数</text>
+        <input class="input" type="number" data-field="maximumMembers" value="{{form.maximumMembers}}" bindinput="onInput" />
+      </view>
+    </view>
+  </view>
+
+  <view class="form-card">
+    <view class="field">
+      <text class="form-label">必须满足的条件</text>
+      <input class="input" placeholder="用逗号分隔，例如：低油,不含花生" data-field="hardConstraintsText" value="{{form.hardConstraintsText}}" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <text class="form-label">可以接受的偏好</text>
+      <input class="input" placeholder="用逗号分隔，例如：少盐,米饭软一点" data-field="preferencesText" value="{{form.preferencesText}}" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <text class="form-label">补充说明</text>
+      <textarea class="textarea" maxlength="1000" placeholder="描述口味、食材配比或其他可执行要求" data-field="notes" value="{{form.notes}}" bindinput="onInput"></textarea>
+    </view>
+  </view>
+
+  <view class="bottom-action">
+    <button class="primary-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submit">提交并加入聚合</button>
+    <text class="hint">提交后平台会将相近条件归入同一需求组，你可以随时查看人数和商家报价进展。</text>
+  </view>
+</view>

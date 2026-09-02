@@ -1,0 +1,38 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <text class="eyebrow">MY ORDERS</text>
+      <text class="page-title">订单进度</text>
+      <text class="page-subtitle">从成团、制作到配送，每一步都能查到。</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">正在加载订单...</view>
+  <view wx:elif="{{error}}" class="error">
+    <text>{{error}}</text>
+    <button class="secondary-btn retry-btn" bindtap="load">重新加载</button>
+  </view>
+  <view wx:elif="{{empty}}" class="empty">
+    <text>还没有订单</text>
+    <button class="primary-btn retry-btn" bindtap="goCampaigns">去看看预售商品</button>
+  </view>
+  <block wx:else>
+    <view wx:for="{{orders}}" wx:key="id" class="card order-card">
+      <view class="card-topline">
+        <view>
+          <text class="card-title">订单 {{item.id}}</text>
+          <text class="muted order-time">{{item.createdAt}}</text>
+        </view>
+        <text class="status {{item.statusClass}}">{{item.status}}</text>
+      </view>
+      <view class="divider"></view>
+      <view class="detail-row"><text class="muted">数量</text><text>{{item.quantity}} 份</text></view>
+      <view class="detail-row"><text class="muted">收餐人</text><text>{{item.contact}}</text></view>
+      <view class="detail-row"><text class="muted">地址</text><text class="address">{{item.address}}</text></view>
+      <view class="card-footer">
+        <text class="muted">含配送费及平台服务费</text>
+        <text class="amount">{{item.total}}</text>
+      </view>
+    </view>
+  </block>
+</view>

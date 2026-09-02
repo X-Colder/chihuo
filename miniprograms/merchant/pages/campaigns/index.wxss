@@ -1,0 +1,40 @@
+.info-banner {
+  margin-bottom: 26rpx;
+  padding: 22rpx;
+  border: 1rpx solid #dbe9de;
+  border-radius: 12rpx;
+  background: #eaf5ed;
+}
+
+.info-title,
+.info-text {
+  display: block;
+}
+
+.info-title {
+  color: #1f6b57;
+  font-weight: 700;
+}
+
+.info-text {
+  margin-top: 8rpx;
+  color: #527061;
+  font-size: 23rpx;
+  line-height: 1.5;
+}
+
+.campaign-id {
+  display: block;
+  margin-top: 8rpx;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #edf0ed;
+}
+
+.detail-row:last-child {
+  border-bottom: 0;
+}
