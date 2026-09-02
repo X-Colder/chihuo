@@ -9,11 +9,10 @@ import (
 )
 
 var (
-	ErrNotFound       = errors.New("resource not found")
-	ErrConflict       = errors.New("resource conflict")
-	ErrForbidden      = errors.New("forbidden")
-	ErrInvalid        = errors.New("invalid resource state")
-	ErrNotImplemented = errors.New("storage operation not implemented")
+	ErrNotFound  = errors.New("resource not found")
+	ErrConflict  = errors.New("resource conflict")
+	ErrForbidden = errors.New("forbidden")
+	ErrInvalid   = errors.New("invalid resource state")
 )
 
 type CreateUserInput struct {
