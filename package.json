@@ -1,0 +1,13 @@
+{
+  "name": "chihuo",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@11.8.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @chihuo/api --filter @chihuo/consumer --filter @chihuo/merchant --filter @chihuo/rider --filter @chihuo/admin dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  }
+}

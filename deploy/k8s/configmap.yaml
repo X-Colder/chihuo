@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chihuo-config
+data:
+  NODE_ENV: production
+  API_PORT: "4000"
+  API_ALLOWED_ORIGINS: "http://consumer.chihuo.local,http://merchant.chihuo.local,http://rider.chihuo.local,http://admin.chihuo.local"
+  FRONTEND_API_BASE_URL: /api

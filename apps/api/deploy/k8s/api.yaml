@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: chihuo-api
+spec:
+  selector:
+    app: chihuo-api
+  ports:
+    - name: http
+      port: 4000
+      targetPort: 4000
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chihuo-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chihuo-api
+  template:
+    metadata:
+      labels:
+        app: chihuo-api
+    spec:
+      imagePullSecrets: []
+      initContainers:
+        - name: migrate
+          image: chihuo-api:local
+          imagePullPolicy: Never
+          workingDir: /app/apps/api
+          command: ["node", "dist/cli/migrate.js"]
+          envFrom:
+            - configMapRef:
+                name: chihuo-api-config
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chihuo-api-secret
+                  key: JWT_SECRET
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: chihuo-api-secret
+                  key: DATABASE_URL
+      containers:
+        - name: api
+          image: chihuo-api:local
+          imagePullPolicy: Never
+          workingDir: /app/apps/api
+          command: ["sh", "-c", "node dist/cli/seed.js && node dist/server.js"]
+          envFrom:
+            - configMapRef:
+                name: chihuo-api-config
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chihuo-api-secret
+                  key: JWT_SECRET
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: chihuo-api-secret
+                  key: DATABASE_URL
+          ports:
+            - containerPort: 4000
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 4000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 4000
+            initialDelaySeconds: 10
+            periodSeconds: 20

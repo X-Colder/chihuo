@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  labels:
+    app.kubernetes.io/name: api
+spec:
+  selector:
+    app.kubernetes.io/name: api
+  ports:
+    - name: http
+      port: 4000
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consumer
+  labels:
+    app.kubernetes.io/name: consumer
+spec:
+  selector:
+    app.kubernetes.io/name: consumer
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: merchant
+  labels:
+    app.kubernetes.io/name: merchant
+spec:
+  selector:
+    app.kubernetes.io/name: merchant
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rider
+  labels:
+    app.kubernetes.io/name: rider
+spec:
+  selector:
+    app.kubernetes.io/name: rider
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin
+  labels:
+    app.kubernetes.io/name: admin
+spec:
+  selector:
+    app.kubernetes.io/name: admin
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

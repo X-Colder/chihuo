@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chihuo-api-config
+data:
+  NODE_ENV: production
+  HOST: 0.0.0.0
+  PORT: "4000"
+  POSTGRES_DB: chihuo
+  POSTGRES_USER: chihuo
+  POSTGRES_HOST: chihuo-postgres

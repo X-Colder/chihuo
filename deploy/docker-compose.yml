@@ -1,0 +1,158 @@
+name: chihuo
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-chihuo}
+      POSTGRES_USER: ${POSTGRES_USER:-chihuo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-chihuo-dev-only}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - chihuo-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  api:
+    image: chihuo/api:local
+    build:
+      context: ..
+      dockerfile: deploy/docker/Dockerfile.api
+      args:
+        API_ENTRYPOINT: ${API_ENTRYPOINT:-apps/api/dist/index.js}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      API_ENTRYPOINT: ${API_ENTRYPOINT:-apps/api/dist/index.js}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chihuo}:${POSTGRES_PASSWORD:-chihuo-dev-only}@postgres:5432/${POSTGRES_DB:-chihuo}
+      JWT_SECRET: ${JWT_SECRET:-replace-this-development-secret}
+      API_ALLOWED_ORIGINS: ${API_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${API_PORT:-4000}:4000"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1:4000/healthz >/dev/null || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  consumer:
+    image: chihuo/consumer:local
+    build:
+      context: ..
+      dockerfile: deploy/docker/Dockerfile.frontend
+      args:
+        APP_NAME: consumer
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:4000}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${CONSUMER_PORT:-5173}:80"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1/healthz >/dev/null || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  merchant:
+    image: chihuo/merchant:local
+    build:
+      context: ..
+      dockerfile: deploy/docker/Dockerfile.frontend
+      args:
+        APP_NAME: merchant
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:4000}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${MERCHANT_PORT:-5174}:80"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1/healthz >/dev/null || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  rider:
+    image: chihuo/rider:local
+    build:
+      context: ..
+      dockerfile: deploy/docker/Dockerfile.frontend
+      args:
+        APP_NAME: rider
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:4000}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${RIDER_PORT:-5175}:80"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1/healthz >/dev/null || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  admin:
+    image: chihuo/admin:local
+    build:
+      context: ..
+      dockerfile: deploy/docker/Dockerfile.frontend
+      args:
+        APP_NAME: admin
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:4000}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${ADMIN_PORT:-5176}:80"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1/healthz >/dev/null || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  chihuo-postgres-data:

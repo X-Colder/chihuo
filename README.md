@@ -1,0 +1,39 @@
+# 吃货 Chihuo
+
+需求驱动的本地化预售餐饮平台第一版。
+
+## 第一版工作区
+
+- `apps/api`：统一后端 API
+- `apps/consumer`：消费者端
+- `apps/merchant`：商家端
+- `apps/rider`：骑手端
+- `apps/admin`：平台管理后台
+- `packages/contracts`：跨端 API 类型和领域契约
+- `deploy`：Docker Compose、容器和 Kubernetes 配置
+
+## 核心闭环
+
+消费者发布需求 -> 用户聚合需求 -> 商家报价 -> 平台审核 -> 预售下单 -> 生产批次 -> 骑手配送 -> 售后与食品安全记录。
+
+## 本地开发
+
+```bash
+pnpm install
+pnpm dev
+```
+
+各端默认端口：
+
+- API: `4000`
+- 消费者端: `5173`
+- 商家端: `5174`
+- 骑手端: `5175`
+- 管理后台: `5176`
+
+## 部署
+
+```bash
+docker compose -f deploy/docker-compose.yml up --build
+kubectl apply -k deploy/k8s
+```
