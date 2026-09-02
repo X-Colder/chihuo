@@ -62,8 +62,9 @@ docker compose \
 
 The included Redis service is suitable for local integration testing. Use a
 managed Redis-compatible service with authentication and TLS for production.
-The current first phase does not consume Redis yet; the environment and
-overlay are prepared for the cache integration milestone.
+The first phase uses Redis for distributed fixed-window rate limiting when
+`REDIS_URL` is configured. Without it, each API replica uses a local limiter;
+production multi-replica deployments should configure Redis.
 
 ## Build the local API image
 

@@ -18,6 +18,8 @@ miniprograms/merchant
 globalData: {
   config: {
     API_BASE_URL: 'http://127.0.0.1:4000',
+    LOGIN_MODE: 'dev',
+    LOGIN_PATH: '/v1/auth/wechat-login',
     DEV_LOGIN_PATH: '/v1/auth/dev/wechat-login',
     DEV_ROLE: 'MERCHANT',
     DEV_NAME: '开发商家',
@@ -26,7 +28,9 @@ globalData: {
 }
 ```
 
-开发登录会先调用 `wx.login()` 获取 code，再调用 `DEV_LOGIN_PATH`。默认角色为 `MERCHANT`，登录返回的 token 和用户信息会保存到微信 storage。后续请求自动携带：
+本地调试使用 `LOGIN_MODE: 'dev'`，会调用 `DEV_LOGIN_PATH`。生产环境改为
+`LOGIN_MODE: 'wechat'`，调用 `LOGIN_PATH`。两种模式都会先调用
+`wx.login()` 获取 code，登录返回的 token 和用户信息会保存到微信 storage。后续请求自动携带：
 
 ```text
 Authorization: Bearer <token>

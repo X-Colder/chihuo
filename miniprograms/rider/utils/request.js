@@ -17,7 +17,10 @@ function getAppConfig() {
 
   return {
     baseUrl: String(baseUrl).replace(/\/+$/, ''),
-    tokenKey: app && app.globalData && app.globalData.tokenKey ? app.globalData.tokenKey : TOKEN_KEY
+    tokenKey: app && app.globalData && app.globalData.tokenKey ? app.globalData.tokenKey : TOKEN_KEY,
+    loginMode: app && app.globalData && app.globalData.LOGIN_MODE ? app.globalData.LOGIN_MODE : 'dev',
+    loginPath: app && app.globalData && app.globalData.LOGIN_PATH ? app.globalData.LOGIN_PATH : '/v1/auth/wechat-login',
+    devLoginPath: app && app.globalData && app.globalData.DEV_LOGIN_PATH ? app.globalData.DEV_LOGIN_PATH : '/v1/auth/dev/wechat-login'
   }
 }
 
@@ -74,8 +77,9 @@ function ensureToken() {
           reject(createError('微信登录未返回 code'))
           return
         }
+        var appConfig = getAppConfig()
         wx.request({
-          url: getApiBaseUrl() + '/v1/auth/dev/wechat-login',
+          url: getApiBaseUrl() + (appConfig.loginMode === 'wechat' ? appConfig.loginPath : appConfig.devLoginPath),
           method: 'POST',
           data: {
             code: loginResult.code,

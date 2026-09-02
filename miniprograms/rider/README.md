@@ -36,11 +36,14 @@ wx.removeStorageSync('chihuo.rider.apiBaseUrl')
 
 ## 认证与接口
 
-`utils/request.js` 使用 `wx.request`，第一次请求会调用开发登录接口：
+`utils/request.js` 使用 `wx.request`，本地调试时第一次请求会调用开发登录接口：
 
 ```text
 POST /v1/auth/dev/wechat-login
 ```
+
+生产环境将 `app.js` 中的 `LOGIN_MODE` 改为 `wechat`，请求
+`POST /v1/auth/wechat-login`。AppSecret 只配置在 Go API 服务端。
 
 返回的 JWT 会保存到：
 

@@ -9,6 +9,7 @@ import (
 func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /health/live", s.handleLive)
 	s.mux.HandleFunc("GET /health/ready", s.handleReady)
+	s.mux.HandleFunc("POST /v1/auth/wechat-login", s.handleWeChatLogin)
 	s.mux.HandleFunc("POST /v1/auth/dev/wechat-login", s.handleDevLogin)
 	s.mux.Handle("GET /v1/auth/me", s.requireAuth(http.HandlerFunc(s.handleMe)))
 

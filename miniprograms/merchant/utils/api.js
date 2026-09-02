@@ -60,9 +60,12 @@ function devLogin(force) {
   if (!force && existing.token) return Promise.resolve(existing)
 
   const config = getConfig()
+  const loginPath = config.LOGIN_MODE === 'wechat'
+    ? (config.LOGIN_PATH || '/v1/auth/wechat-login')
+    : (config.DEV_LOGIN_PATH || '/v1/auth/dev/wechat-login')
   return wxLoginCode().then((code) => new Promise((resolve, reject) => {
     wx.request({
-      url: `${baseUrl()}${config.DEV_LOGIN_PATH || '/v1/auth/dev/wechat-login'}`,
+      url: `${baseUrl()}${loginPath}`,
       method: 'POST',
       data: {
         code,

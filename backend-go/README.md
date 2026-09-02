@@ -44,8 +44,10 @@ POST /v1/auth/dev/wechat-login
 ```
 
 Set `DEV_LOGIN_ENABLED=false` in any non-development environment. The
-`WeChatLoginProvider` interface is the replacement point for a real
-`wx.login`/WeChat identity exchange; app secrets must remain outside this
+`WeChatLoginProvider` interface is the replacement point for the real
+`wx.login`/WeChat identity exchange. Configure `WECHAT_APP_ID` and
+`WECHAT_APP_SECRET` to enable `POST /v1/auth/wechat-login`. The Go API calls
+WeChat `code2Session` server-side; app secrets must remain outside this
 repository and outside request payloads.
 
 ## API Contract
@@ -128,11 +130,14 @@ cd backend-go
 GOCACHE=/tmp/chihuo-go-build go test ./...
 GOCACHE=/tmp/chihuo-go-build go test -race ./...
 GOCACHE=/tmp/chihuo-go-build go build ./cmd/server
+GOCACHE=/tmp/chihuo-go-build go test -bench=BenchmarkHealthParallel -benchmem ./internal/httpapi
 ```
 
 Integration tests use `httptest.NewRecorder` and exercise authentication,
 CORS, request IDs, demand aggregation, admin review, merchant offer and
-campaign creation, order totals, and idempotency replay.
+campaign creation, order totals, idempotency replay, and WeChat provider
+responses. The benchmark is a local handler benchmark, not a million-user
+capacity claim; production capacity still requires distributed load testing.
 
 ## Configuration
 
@@ -145,3 +150,11 @@ campaign creation, order totals, and idempotency replay.
 | `DATABASE_URL` | empty | PostgreSQL connection string; empty uses memory mode |
 | `CORS_ALLOWED_ORIGINS` | `*` | Use explicit origins in production |
 | `DEV_LOGIN_ENABLED` | `false` | Development-only login switch |
+| `WECHAT_APP_ID` | empty | Production mini-program AppID |
+| `WECHAT_APP_SECRET` | empty | Production-only secret |
+| `WECHAT_CODE2SESSION_URL` | official URL | Override only for testing |
+| `REDIS_ENABLED` | `false` | Enable distributed rate limiting |
+| `REDIS_URL` | empty | Optional distributed rate-limit backend |
+| `REDIS_PASSWORD` | empty | Redis password when required |
+| `RATE_LIMIT_RPS` | `200` | Per-key fixed-window request limit |
+| `RATE_LIMIT_BURST` | `400` | Upper bound for the same window |

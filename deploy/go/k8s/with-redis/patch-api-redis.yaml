@@ -10,6 +10,8 @@ spec:
           env:
             - name: REDIS_ENABLED
               value: "true"
+            - name: REDIS_URL
+              value: "redis://chihuo-go-redis:6379/0"
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:

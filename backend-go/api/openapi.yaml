@@ -58,6 +58,29 @@ paths:
                 $ref: "#/components/schemas/DataResponse"
         "400":
           $ref: "#/components/responses/BadRequest"
+  /v1/auth/wechat-login:
+    post:
+      security: []
+      tags: [Auth]
+      summary: Production WeChat login
+      description: Exchanges wx.login code through the server-side code2Session provider.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DevLoginRequest"
+      responses:
+        "200":
+          description: JWT session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          description: WeChat login is not configured
   /v1/auth/me:
     get:
       tags: [Auth]

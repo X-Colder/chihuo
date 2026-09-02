@@ -27,6 +27,18 @@ func (s *Server) handleDevLogin(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, http.StatusNotFound, "NOT_FOUND", "dev login is disabled", nil)
 		return
 	}
+	s.handleLogin(w, r, DevWeChatLoginProvider{}, true)
+}
+
+func (s *Server) handleWeChatLogin(w http.ResponseWriter, r *http.Request) {
+	if s.config.WeChatAppID == "" || s.config.WeChatAppSecret == "" {
+		writeError(w, r, http.StatusNotFound, "WECHAT_LOGIN_NOT_CONFIGURED", "WeChat login is not configured", nil)
+		return
+	}
+	s.handleLogin(w, r, s.provider, false)
+}
+
+func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request, provider WeChatLoginProvider, dev bool) {
 	body, err := readJSONBody(r)
 	if err != nil {
 		s.writeOperationError(w, r, err)
@@ -40,11 +52,15 @@ func (s *Server) handleDevLogin(w http.ResponseWriter, r *http.Request) {
 	if input.Role == "" {
 		input.Role = domain.RoleConsumer
 	}
+	if !dev && input.Role == domain.RoleAdmin {
+		s.writeOperationError(w, r, newRequestError(http.StatusForbidden, "INVALID_ROLE", "admin role cannot use WeChat client login", nil))
+		return
+	}
 	if err := input.validate(); err != nil {
 		s.writeOperationError(w, r, err)
 		return
 	}
-	identity, err := s.provider.Login(r.Context(), strings.TrimSpace(input.Code))
+	identity, err := provider.Login(r.Context(), strings.TrimSpace(input.Code))
 	if err != nil {
 		s.writeOperationError(w, r, err)
 		return
@@ -83,7 +99,7 @@ func (s *Server) handleDevLogin(w http.ResponseWriter, r *http.Request) {
 	writeData(w, http.StatusOK, map[string]any{
 		"token": token,
 		"user":  session,
-		"mode":  "dev",
+		"mode":  map[bool]string{true: "dev", false: "wechat"}[dev],
 	})
 }
 

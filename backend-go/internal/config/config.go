@@ -16,6 +16,14 @@ type Config struct {
 	DatabaseURL        string
 	CORSAllowedOrigins []string
 	DevLoginEnabled    bool
+	WeChatAppID        string
+	WeChatAppSecret    string
+	WeChatLoginURL     string
+	RedisURL           string
+	RedisPassword      string
+	RedisEnabled       bool
+	RateLimitRPS       int
+	RateLimitBurst     int
 }
 
 func Load() (Config, error) {
@@ -27,12 +35,23 @@ func Load() (Config, error) {
 		DatabaseURL:        os.Getenv("DATABASE_URL"),
 		CORSAllowedOrigins: csvEnv("CORS_ALLOWED_ORIGINS", []string{"*"}),
 		DevLoginEnabled:    boolOr("DEV_LOGIN_ENABLED", false),
+		WeChatAppID:        strings.TrimSpace(os.Getenv("WECHAT_APP_ID")),
+		WeChatAppSecret:    strings.TrimSpace(os.Getenv("WECHAT_APP_SECRET")),
+		WeChatLoginURL:     envOr("WECHAT_CODE2SESSION_URL", "https://api.weixin.qq.com/sns/jscode2session"),
+		RedisURL:           strings.TrimSpace(os.Getenv("REDIS_URL")),
+		RedisPassword:      strings.TrimSpace(os.Getenv("REDIS_PASSWORD")),
+		RedisEnabled:       boolOr("REDIS_ENABLED", false),
+		RateLimitRPS:       intOr("RATE_LIMIT_RPS", 200),
+		RateLimitBurst:     intOr("RATE_LIMIT_BURST", 400),
 	}
 	if len(cfg.JWTSecret) < 32 {
 		return Config{}, errors.New("JWT_SECRET must be at least 32 bytes and provided through the environment")
 	}
 	if cfg.JWTTTL <= 0 {
 		return Config{}, errors.New("JWT_TTL must be positive")
+	}
+	if cfg.RateLimitRPS <= 0 || cfg.RateLimitBurst <= 0 {
+		return Config{}, errors.New("RATE_LIMIT_RPS and RATE_LIMIT_BURST must be positive")
 	}
 	return cfg, nil
 }
@@ -62,6 +81,18 @@ func boolOr(key string, fallback bool) bool {
 		return fallback
 	}
 	parsed, err := strconv.ParseBool(value)
+	if err != nil {
+		return fallback
+	}
+	return parsed
+}
+
+func intOr(key string, fallback int) int {
+	value := strings.TrimSpace(os.Getenv(key))
+	if value == "" {
+		return fallback
+	}
+	parsed, err := strconv.Atoi(value)
 	if err != nil {
 		return fallback
 	}

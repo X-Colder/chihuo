@@ -36,6 +36,9 @@ services:
       JWT_ISSUER: ${JWT_ISSUER:-chihuo-api}
       JWT_TTL: ${JWT_TTL:-168h}
       DEV_LOGIN_ENABLED: ${DEV_LOGIN_ENABLED:-false}
+      WECHAT_APP_ID: ${WECHAT_APP_ID:-}
+      WECHAT_APP_SECRET: ${WECHAT_APP_SECRET:-}
+      WECHAT_CODE2SESSION_URL: ${WECHAT_CODE2SESSION_URL:-https://api.weixin.qq.com/sns/jscode2session}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL must be set}
       DB_MAX_OPEN_CONNS: ${DB_MAX_OPEN_CONNS:-25}
@@ -45,6 +48,8 @@ services:
       REDIS_URL: ${REDIS_URL:-}
       REDIS_DB: ${REDIS_DB:-0}
       REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      RATE_LIMIT_RPS: ${RATE_LIMIT_RPS:-200}
+      RATE_LIMIT_BURST: ${RATE_LIMIT_BURST:-400}
     ports:
       - "${API_PORT:-4000}:4000"
     depends_on:
