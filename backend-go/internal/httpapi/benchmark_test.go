@@ -17,6 +17,7 @@ func BenchmarkHealthParallel(b *testing.B) {
 		JWTSecret:          "benchmark-secret-that-is-longer-than-32-bytes",
 		JWTIssuer:          "benchmark",
 		JWTTTL:             time.Hour,
+		PaymentProvider:    "sandbox",
 		RateLimitRPS:       1_000_000,
 		RateLimitBurst:     1_000_000,
 		CORSAllowedOrigins: []string{"*"},

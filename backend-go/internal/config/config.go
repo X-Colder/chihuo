@@ -19,6 +19,7 @@ type Config struct {
 	WeChatAppID        string
 	WeChatAppSecret    string
 	WeChatLoginURL     string
+	PaymentProvider    string
 	RedisURL           string
 	RedisPassword      string
 	RedisEnabled       bool
@@ -38,6 +39,7 @@ func Load() (Config, error) {
 		WeChatAppID:        strings.TrimSpace(os.Getenv("WECHAT_APP_ID")),
 		WeChatAppSecret:    strings.TrimSpace(os.Getenv("WECHAT_APP_SECRET")),
 		WeChatLoginURL:     envOr("WECHAT_CODE2SESSION_URL", "https://api.weixin.qq.com/sns/jscode2session"),
+		PaymentProvider:    envOr("PAYMENT_PROVIDER", "disabled"),
 		RedisURL:           strings.TrimSpace(os.Getenv("REDIS_URL")),
 		RedisPassword:      strings.TrimSpace(os.Getenv("REDIS_PASSWORD")),
 		RedisEnabled:       boolOr("REDIS_ENABLED", false),

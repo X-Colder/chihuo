@@ -161,6 +161,7 @@ capacity claim; production capacity still requires distributed load testing.
 | `WECHAT_APP_ID` | empty | Production mini-program AppID |
 | `WECHAT_APP_SECRET` | empty | Production-only secret |
 | `WECHAT_CODE2SESSION_URL` | official URL | Override only for testing |
+| `PAYMENT_PROVIDER` | `disabled` | `sandbox` only for development; production provider pending |
 | `REDIS_ENABLED` | `false` | Enable distributed rate limiting |
 | `REDIS_URL` | empty | Optional distributed rate-limit backend |
 | `REDIS_PASSWORD` | empty | Redis password when required |

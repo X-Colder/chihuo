@@ -64,8 +64,23 @@ func NewWithDependencies(
 		return nil, errors.New("safety service is required")
 	}
 	if paymentHandler == nil {
+		var provider payment.PaymentProvider
+		switch cfg.PaymentProvider {
+		case "sandbox":
+			provider = payment.NewSandboxProvider()
+		case "noop":
+			provider = payment.NewNoopProvider()
+		case "", "disabled":
+			if !cfg.DevLoginEnabled {
+				return nil, errors.New("PAYMENT_PROVIDER must be configured outside development")
+			}
+			provider = payment.NewSandboxProvider()
+		default:
+			return nil, errors.New("unsupported PAYMENT_PROVIDER")
+		}
+		parser := payment.CallbackEventParser(payment.JSONCallbackEventParser{AllowUnsigned: cfg.DevLoginEnabled})
 		var err error
-		paymentHandler, err = NewPaymentHTTPHandler(payment.NewSandboxProvider(), nil)
+		paymentHandler, err = NewPaymentHTTPHandler(provider, parser)
 		if err != nil {
 			return nil, err
 		}

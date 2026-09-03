@@ -219,6 +219,17 @@ func TestAuthenticationCORSAndRequestID(t *testing.T) {
 	}
 }
 
+func TestProductionRequiresExplicitPaymentProvider(t *testing.T) {
+	cfg := config.Config{
+		JWTSecret: "production-payment-test-secret-that-is-longer-than-32",
+		JWTIssuer: "production-test",
+		JWTTTL:    time.Hour,
+	}
+	if _, err := New(cfg, store.NewMemoryStore(), nil); err == nil {
+		t.Fatal("production configuration without a payment provider should fail startup")
+	}
+}
+
 type testResponse struct {
 	StatusCode int
 	Body       string
