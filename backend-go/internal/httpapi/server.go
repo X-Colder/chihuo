@@ -11,6 +11,7 @@ import (
 	"github.com/X-Colder/chihuo/backend-go/internal/auth"
 	"github.com/X-Colder/chihuo/backend-go/internal/config"
 	"github.com/X-Colder/chihuo/backend-go/internal/logging"
+	"github.com/X-Colder/chihuo/backend-go/internal/payment"
 	"github.com/X-Colder/chihuo/backend-go/internal/ratelimit"
 	"github.com/X-Colder/chihuo/backend-go/internal/safety"
 	"github.com/X-Colder/chihuo/backend-go/internal/store"
@@ -24,6 +25,7 @@ type Server struct {
 	provider         WeChatLoginProvider
 	limiter          ratelimit.Limiter
 	safetyService    safety.Service
+	paymentHandler   *PaymentHTTPHandler
 	mux              *http.ServeMux
 	idempotencyLocks sync.Map
 }
@@ -41,11 +43,32 @@ func New(cfg config.Config, dataStore store.Store, logger *slog.Logger) (*Server
 }
 
 func NewWithWeChatProvider(cfg config.Config, dataStore store.Store, logger *slog.Logger, provider WeChatLoginProvider) (*Server, error) {
+	return NewWithDependencies(cfg, dataStore, logger, provider, safety.NewMemoryService(), nil)
+}
+
+func NewWithDependencies(
+	cfg config.Config,
+	dataStore store.Store,
+	logger *slog.Logger,
+	provider WeChatLoginProvider,
+	safetyService safety.Service,
+	paymentHandler *PaymentHTTPHandler,
+) (*Server, error) {
 	if logger == nil {
 		logger = logging.New()
 	}
 	if provider == nil {
 		return nil, errors.New("wechat login provider is required")
+	}
+	if safetyService == nil {
+		return nil, errors.New("safety service is required")
+	}
+	if paymentHandler == nil {
+		var err error
+		paymentHandler, err = NewPaymentHTTPHandler(payment.NewSandboxProvider(), nil)
+		if err != nil {
+			return nil, err
+		}
 	}
 	rps := cfg.RateLimitRPS
 	if rps <= 0 {
@@ -70,14 +93,15 @@ func NewWithWeChatProvider(cfg config.Config, dataStore store.Store, logger *slo
 		return nil, err
 	}
 	server := &Server{
-		store:         dataStore,
-		signer:        signer,
-		config:        cfg,
-		logger:        logger,
-		provider:      provider,
-		limiter:       limiter,
-		safetyService: safety.NewMemoryService(),
-		mux:           http.NewServeMux(),
+		store:          dataStore,
+		signer:         signer,
+		config:         cfg,
+		logger:         logger,
+		provider:       provider,
+		limiter:        limiter,
+		safetyService:  safetyService,
+		paymentHandler: paymentHandler,
+		mux:            http.NewServeMux(),
 	}
 	server.registerRoutes()
 	return server, nil

@@ -15,6 +15,7 @@ tags:
   - name: Merchant
   - name: Campaigns
   - name: Orders
+  - name: Payments
   - name: Admin
 paths:
   /health/live:
@@ -263,6 +264,133 @@ paths:
           description: Order
         "403":
           $ref: "#/components/responses/Forbidden"
+  /v1/payments/intents:
+    post:
+      security:
+        - bearerAuth: []
+      tags: [Payments]
+      summary: Create a JSAPI payment intent
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKeyRequired"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePaymentIntentRequest"
+      responses:
+        "201":
+          description: Provider prepay result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /v1/payments:
+    get:
+      security:
+        - bearerAuth: []
+      tags: [Payments]
+      summary: Query a payment by merchant trade number or provider transaction ID
+      parameters:
+        - $ref: "#/components/parameters/OutTradeNo"
+        - $ref: "#/components/parameters/TransactionID"
+      responses:
+        "200":
+          description: Provider payment result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /v1/payments/refunds:
+    post:
+      security:
+        - bearerAuth: []
+      tags: [Payments]
+      summary: Apply for a payment refund
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKeyRequired"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRefundRequest"
+      responses:
+        "201":
+          description: Provider refund result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+    get:
+      security:
+        - bearerAuth: []
+      tags: [Payments]
+      summary: Query a refund by merchant refund number or provider transaction ID
+      parameters:
+        - $ref: "#/components/parameters/OutRefundNo"
+        - $ref: "#/components/parameters/TransactionID"
+      responses:
+        "200":
+          description: Provider refund result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /v1/payments/callback:
+    post:
+      security: []
+      tags: [Payments]
+      summary: Parse a payment provider callback
+      description: Signature verification and callback decryption are delegated to the injected provider parser.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Parsed callback event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /v1/refunds/callback:
+    post:
+      security: []
+      tags: [Payments]
+      summary: Parse a refund provider callback
+      description: Signature verification and callback decryption are delegated to the injected provider parser.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Parsed callback event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
   /v1/admin/demands:
     get:
       tags: [Admin]
@@ -344,6 +472,35 @@ components:
     IdempotencyKey:
       name: Idempotency-Key
       in: header
+      required: false
+      schema:
+          type: string
+          maxLength: 128
+    IdempotencyKeyRequired:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+    OutTradeNo:
+      name: out_trade_no
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 128
+    OutRefundNo:
+      name: out_refund_no
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 128
+    TransactionID:
+      name: transaction_id
+      in: query
       required: false
       schema:
         type: string
@@ -556,6 +713,38 @@ components:
         delivery_address: {type: string}
         contact_name: {type: string}
         contact_phone: {type: string}
+    PaymentMoney:
+      type: object
+      required: [amount_cents, currency]
+      properties:
+        amount_cents: {type: integer, format: int64, minimum: 1}
+        currency: {type: string, minLength: 3, maxLength: 3, default: CNY}
+    CreatePaymentIntentRequest:
+      type: object
+      required: [out_trade_no, order_id, openid, amount, description, notify_url, expire_at]
+      properties:
+        out_trade_no: {type: string, maxLength: 128}
+        order_id: {type: string, maxLength: 128}
+        openid: {type: string, maxLength: 256}
+        amount:
+          $ref: "#/components/schemas/PaymentMoney"
+        description: {type: string, maxLength: 127}
+        attach: {type: string, maxLength: 1024}
+        notify_url: {type: string, format: uri, pattern: "^https://"}
+        expire_at: {type: string, format: date-time}
+    CreateRefundRequest:
+      type: object
+      required: [out_refund_no, out_trade_no, total_amount, refund_amount]
+      properties:
+        out_refund_no: {type: string, maxLength: 128}
+        out_trade_no: {type: string, maxLength: 128}
+        transaction_id: {type: string, maxLength: 128}
+        total_amount:
+          $ref: "#/components/schemas/PaymentMoney"
+        refund_amount:
+          $ref: "#/components/schemas/PaymentMoney"
+        reason: {type: string, maxLength: 256}
+        notify_url: {type: string, format: uri, pattern: "^https://"}
     ReviewRequest:
       type: object
       required: [status]

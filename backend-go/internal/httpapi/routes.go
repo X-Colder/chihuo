@@ -38,6 +38,13 @@ func (s *Server) registerRoutes() {
 	s.mux.Handle("GET /v1/admin/merchants", s.requireRoles(domain.RoleAdmin)(http.HandlerFunc(s.handleAdminMerchants)))
 	s.mux.Handle("PATCH /v1/admin/merchants/{id}/review", s.requireRoles(domain.RoleAdmin)(http.HandlerFunc(s.handleReviewMerchant)))
 
+	s.mux.Handle("POST /v1/payments/intents", s.requireRoles(domain.RoleConsumer)(http.HandlerFunc(s.handleCreatePaymentIntent)))
+	s.mux.Handle("GET /v1/payments", s.requireRoles(domain.RoleAdmin)(http.HandlerFunc(s.paymentHandler.HandleQueryPayment)))
+	s.mux.Handle("POST /v1/payments/refunds", s.requireRoles(domain.RoleAdmin)(http.HandlerFunc(s.paymentHandler.HandleCreateRefund)))
+	s.mux.Handle("GET /v1/payments/refunds", s.requireRoles(domain.RoleAdmin)(http.HandlerFunc(s.paymentHandler.HandleQueryRefund)))
+	s.mux.HandleFunc("POST /v1/payments/callback", s.paymentHandler.HandlePaymentCallback)
+	s.mux.HandleFunc("POST /v1/refunds/callback", s.paymentHandler.HandleRefundCallback)
+
 	s.mux.Handle("POST /v1/merchant/safety/incidents", s.requireRoles(domain.RoleMerchant, domain.RoleAdmin)(http.HandlerFunc(s.handleCreateSafetyIncident)))
 	s.mux.Handle("GET /v1/merchant/safety/incidents", s.requireRoles(domain.RoleMerchant, domain.RoleAdmin)(http.HandlerFunc(s.handleListSafetyIncidents)))
 	s.mux.Handle("PATCH /v1/merchant/safety/incidents/{id}", s.requireRoles(domain.RoleMerchant, domain.RoleAdmin)(http.HandlerFunc(s.handleTransitionSafetyIncident)))
